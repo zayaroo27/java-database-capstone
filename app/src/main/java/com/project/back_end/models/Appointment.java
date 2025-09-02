@@ -1,8 +1,96 @@
 package com.project.back_end.models;
 
-public class Appointment {
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 
-  // @Entity annotation:
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+@Entity
+public class Appointment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne
+    @NotNull(message = "Doctor cannot be null")
+    private Doctor doctor;
+    @ManyToOne
+    @NotNull(message = "appointment cannot be null")
+    private Appointment appointment;
+    @NotNull(message = "Appointment time cannot be null")
+    @Future(message = "Appointment time must be in the future")
+    private LocalDateTime appointmentTime;
+    private int status;
+
+    public Appointment(Doctor doctor, Appointment appointment, LocalDateTime appointmentTime, int status) {
+        this.doctor = doctor;
+        this.appointment = appointment;
+        this.appointmentTime = appointmentTime;
+        this.status = status;
+    }
+
+    public Appointment() {
+
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public Appointment getAppointment() {
+        return appointment;
+    }
+
+    public void setAppointment(Appointment appointment) {
+        this.appointment = appointment;
+    }
+
+    public LocalDateTime getAppointmentTime() {
+        return appointmentTime;
+    }
+
+    public void setAppointmentTime(LocalDateTime appointmentTime) {
+        this.appointmentTime = appointmentTime;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    @Transient
+    public LocalDateTime getEndTime() {
+        return this.appointmentTime.plusHours(1);
+    }
+
+    @Transient
+    public LocalDate getAppointmentDate() {
+        return this.appointmentTime.toLocalDate();
+    }
+
+    @Transient
+    public LocalTime getAppointmentTimeOnly() {
+        return this.appointmentTime.toLocalTime();
+    }
+
+// @Entity annotation:
 //    - Marks the class as a JPA entity, meaning it represents a table in the database.
 //    - Required for persistence frameworks (e.g., Hibernate) to map the class to a database table.
 
